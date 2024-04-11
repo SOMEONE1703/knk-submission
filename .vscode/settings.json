@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/ded85ac5-f429-422d-8da2-93aed852c7b2/resourceGroups/knk-submission/providers/Microsoft.Web/sites/knk-submission",
+    "appService.deploySubpath": "."
+}
