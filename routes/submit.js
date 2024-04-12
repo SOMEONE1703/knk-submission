@@ -5,82 +5,133 @@ const fs=require('fs');
 const multer = require('multer');
 const form_data = require('form-data');
 const upload = multer({ dest: 'uploads/' });
-
+const { exec } = require('child_process');
 const main_tests=[];
 
-// function test_case(code,input,expected_out){
-//     this.code=code;
-//     this.input=input;
-//     this.expected_out=expected_out;
-//     this.result='not-a-value';
-//     this.out;
-//     this.test=function(){
-//         //console.log("me?");
-//         exec(`${this.code} < ${input}`, (error, stdout, stderr) => {
-//             //console.log("starting");
-//             if (error) {
-//                 this.result="exexution error";
-//                 console.error(`execution error: ${error}`);
+function test_case(person_id,test_id,input,expected_out){
+    this.input=input;
+    this.expected_out=expected_out;
+    this.result='not-a-value';
+    this.out;
+    this.test=function(){
+        //console.log("me?");
+        exec(`${this.code} < ${input}`, (error, stdout, stderr) => {
+            //console.log("starting");
+            if (error) {
+                this.result="exexution error";
+                console.error(`execution error: ${error}`);
         
-//                 return;
+                return;
         
-//             }
-//             //console.log(`stdout: ${stdout}`);
-//             this.out=stdout;
-//             if (stdout==expected_out){
-//                 //console.log("test reveals true");
-//                 this.result=true;
-//                 //console.log(this);
-//             }
-//             else{
-//                 //console.log("test reveals false");
-//                 this.result=false;
-//                 //console.log(this);
-//             }
-//             //console.log("end");
+            }
+            //console.log(`stdout: ${stdout}`);
+            this.out=stdout;
+            if (stdout==expected_out){
+                //console.log("test reveals true");
+                this.result=true;
+                //console.log(this);
+            }
+            else{
+                //console.log("test reveals false");
+                this.result=false;
+                //console.log(this);
+            }
+            //console.log("end");
         
-//         });
-//     }
-// }
+        });
+    }
+}
+async function run_test(id,input,output){
+    exec(`${id}.exe < ${input}`, (error, stdout, stderr) => {
+        //console.log("starting");
+        if (error) {
+            console.error(`execution error: ${error}`);
+            return "exexution error";
+        }
+        if (stdout==output){
+            return true;
+        }
+        else{
+            return false;
+        }
+        //console.log("end");
+    
+    });
+}
 
-// function test(test_id,id){
-//     this.test_id=test_id;
-//     this.id=id;
-//     this.score=0;
-//     this.tests=[];
-//     this.code=`${id}.cpp`;
-//     this.compiled=false;
-//     this.compile=function(){
-//         exec(`g++ ${this.code} -o ${this.id}.exe`, (error, stdout, stderr) => {
-//             if (error) {
+function adding_test(person_id,test_id){
+    this.test_id=test_id;
+    this.person_id=person_id;
+    this.input=["tests/adding/1.txt","tests/adding/2.txt","tests/adding/3.txt"];
+    this.expected_out=[9,604,880];
+    this.output=[];
+    this.score='not-a-value';
+    this.test = async function(){
+        //console.log("me?");
+        for (let i=0;i<input.length;i++){
+            const outcome = await run_test(person_id,input[i],output[i]);
+            if (this.score=='not-a-value'){
+                this.score=0;
+            }
+            if (outcome){
+                this.output.push("Passed");
+                this.score++;
+            }
+            else{
+                this.output.push("Failed");
+            }
+        }
+    }
+    this.test();
+}
+
+function test(test_id,id){
+    this.test_id=test_id;
+    this.id=id;
+    this.score=0;
+    this.tests=[];
+    this.code=`${id}.cpp`;
+    this.compiled=false;
+    this.compile=function(){
+        exec(`g++ ${this.code} -o ${this.id}.exe`, (error, stdout, stderr) => {
+            if (error) {
                 
-//                 console.error(`compile error: ${error}`);
+                console.error(`compile error: ${error}`);
                 
-//                 return;
+                return;
         
-//             }
-//             //console.log("compiled");
-//             this.compiled=true;
+            }
+            //console.log("compiled");
+            this.compiled=true;
         
             
-//         });
-//     }
-//     this.run_tests=function(){
-//         this.score++;
-//         for (let i=0;i<this.tests.length;i++){
-//             this.tests[i].test();
-//             //this.score+=(100/this.tests.length);
-//         }
-//     }
+        });
+    }
+    this.run_tests=function(){
+        this.score++;
+        for (let i=0;i<this.tests.length;i++){
+            this.tests[i].test();
+            //this.score+=(100/this.tests.length);
+        }
+    }
     
-// }
+}
 
-/* GET users listing. */
+function compile(id){
+    exec(`g++ ${id}.cpp -o ${id}.exe`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`compile error: ${error}`);
+            return "compile error";
+        }
+        return "done";
+    });
+}
 router.get('/', function(req, res, next) {
-    const filePath = path.join(__dirname, "../public/homepage.html");
-    res.sendFile(filePath);
+  const filePath = path.join(__dirname, "../public/homepage.html");
+  res.sendFile(filePath);
 });
-router.post('/results', function(req, res, next) {
+
+router.post('/results', function(request, response, next) {
     let ID=request.body.id;
     let name=request.body.name;
     let index=-1;
@@ -116,18 +167,16 @@ router.post('/results', function(req, res, next) {
     }
 });
 
-
 router.post("/:id",upload.single('file'),(request,response,next)=>{
     if (!request.file){
         response.status(400).send('No files uploaded');
         return;
     }
     let ID=request.params.id;
-    let compiled=false;
     
     let filePath=request.file.path;
     var f=`${ID}.cpp`;
-    var what;
+    var co_res="not done";
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             console.error(`Error reading file: ${err}`);
@@ -135,36 +184,80 @@ router.post("/:id",upload.single('file'),(request,response,next)=>{
             return;
         }
 
-        //console.log(`File contents: ${data}`);
-        //console.log(typeof data);
-        what=data;
+        
         
         fs.writeFile(f, data, (err) => {
             if (err) {
                 console.error(`Error writing to file: ${err}`);
                 return;
             }
-        
+            co_res=compile(ID);
             //console.log(`first write to ${f} successfully`);
         });
         
     });
     
     //now for the messed up part
-    
-    let test1=new test("adding",ID);
-    test1.compile();
-    
-    main_tests.push(test1);
-    
-    response.status(200).send("all good");
-    
-    
-});
-router.get("/:id",function(req,res){
-    res.send({odd:"very odd"});
+
+    //main_tests.push(new test_case(ID,"adding","tests/adding/1.txt",9));
+    //main_tests.push(new test_case(ID,"adding","tests/adding/2.txt",604));
+    //main_tests.push(new test_case(ID,"adding","tests/adding/3.txt",880));
+    main_tests.push(new adding_test(ID,"adding"));
+    // test1.tests.push(new test_case(`${ID}`,"tests/adding/1.txt",9));
+    // test1.tests.push(new test_case(`${ID}`,"tests/adding/2.txt",604));
+    // test1.tests.push(new test_case(`${ID}`,"tests/adding/3.txt",880));
+    if (co_res=="done"){
+        response.status(200).send(main_tests);
+    }
+    else{
+        response.status(200).send("Compile error");
+    }
 });
 
+
+router.get("/:id/:func",function(request,response){
+    let ID=request.params.id;
+    let name=request.params.func;
+    let index=-1;
+    
+    
+    //console.log(main_tests);
+    for (let i=0;i<main_tests.length;i++){
+        if (main_tests[i].test_id==name&&main_tests[i].id==ID){
+            index=i;
+        }
+    }
+    if (index===-1){
+        response.status(404).send("Test not found");
+    }
+    else{
+        let n_tests=3;
+        main_tests[index].run_tests();
+        let arr=[];
+        for (let i=0;i<n_tests;i++){
+            //console.log(main_tests[index].tests[i]);
+            //console.log(main_tests[index].tests[i]);
+            if (main_tests[index].tests[i].result=="not-a-value"){}
+            else if (main_tests[index].tests[i].result){
+                arr.push("Passed");
+            }
+            else{
+                arr.push("Failed");
+            }
+        }
+        response.status(200).send({tests:arr,score:main_tests[index].score});
+        
+    }
+
+    //response.send(main_tests);
+});
+
+
+
+
+router.get("/:id",function(req,res){
+    res.send(main_tests);
+});
 
 
 module.exports = router;

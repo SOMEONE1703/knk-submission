@@ -39,7 +39,7 @@ function send_file(){
 
 function getRes(){
     console.log("called");
-    let url="http://lab5-cars.azurewebsites.net/results"
+    let url="https://knk-submission.azurewebsites.net/submit/results"
     fetch(url,{
         method:'POST',
         headers:{
@@ -49,6 +49,47 @@ function getRes(){
             id:"1",
             name:"adding"
         })
+    }).then(res=>{
+        if (res.ok){
+            console.log("worked");
+            return res.json();
+        }
+        else{
+            console.log("did not work")
+        }
+    })
+    .then(data=>{
+        console.log(data);
+        const where=document.getElementById("result");
+        if (data.score==2){
+        for (let i=0;i<data.tests.length;i++){
+            console.log("weird");
+            var testcaseResult=document.createElement("p");
+            testcaseResult.textContent=`Test Case ${i+1} :   `;
+            if (data.tests[i]=="Passed"){
+                testcaseResult.textContent+="Passed";
+                testcaseResult.style.color="Green";
+            }
+            else{
+                testcaseResult.textContent+="Failed";
+                testcaseResult.style.color="Red";
+            }
+            where.appendChild(testcaseResult);
+        }
+        const butt=document.getElementById("submit");
+        butt.onclick=sendFile;
+        butt.textContent="Re-Submit";
+        }
+        
+    })
+    .catch(error=>console.error('ERROR',error))
+}
+
+function get_res(){
+    console.log("call");
+    let url="https://knk-submission.azurewebsites.net/submit/1/adding"
+    fetch(url,{
+        method:'GET'
     }).then(res=>{
         if (res.ok){
             console.log("worked");
@@ -97,7 +138,7 @@ function sendFile() {
 
     const formData = new FormData();
     formData.append('file', file);
-    let url="http://lab5-cars.azurewebsites.net/submit/1"
+    let url="https://knk-submission.azurewebsites.net/submit/1"
     fetch(url, {
         method: 'POST',
         body: formData
@@ -108,7 +149,7 @@ function sendFile() {
         console.log(data);
         console.log(":theorem");
         const butt=document.getElementById("submit");
-        butt.onclick=getRes;
+        butt.onclick=get_res;
         butt.textContent="Get Results";
         //document.getElementById('response').innerText = data;
     })
