@@ -9,7 +9,7 @@ function send_file(){
         return;
     }
     //now we post file
-    let url="http://lab5-cars.azurewebsites.net"
+    let url="https://knk-submission.azurewebsites.net/submit/1"
     fetch(url,{
         method:'POST',
         headers:{

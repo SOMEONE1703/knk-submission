@@ -8,72 +8,72 @@ const upload = multer({ dest: 'uploads/' });
 
 const main_tests=[];
 
-function test_case(code,input,expected_out){
-    this.code=code;
-    this.input=input;
-    this.expected_out=expected_out;
-    this.result='not-a-value';
-    this.out;
-    this.test=function(){
-        //console.log("me?");
-        exec(`${this.code} < ${input}`, (error, stdout, stderr) => {
-            //console.log("starting");
-            if (error) {
-                this.result="exexution error";
-                console.error(`execution error: ${error}`);
+// function test_case(code,input,expected_out){
+//     this.code=code;
+//     this.input=input;
+//     this.expected_out=expected_out;
+//     this.result='not-a-value';
+//     this.out;
+//     this.test=function(){
+//         //console.log("me?");
+//         exec(`${this.code} < ${input}`, (error, stdout, stderr) => {
+//             //console.log("starting");
+//             if (error) {
+//                 this.result="exexution error";
+//                 console.error(`execution error: ${error}`);
         
-                return;
+//                 return;
         
-            }
-            //console.log(`stdout: ${stdout}`);
-            this.out=stdout;
-            if (stdout==expected_out){
-                //console.log("test reveals true");
-                this.result=true;
-                //console.log(this);
-            }
-            else{
-                //console.log("test reveals false");
-                this.result=false;
-                //console.log(this);
-            }
-            //console.log("end");
+//             }
+//             //console.log(`stdout: ${stdout}`);
+//             this.out=stdout;
+//             if (stdout==expected_out){
+//                 //console.log("test reveals true");
+//                 this.result=true;
+//                 //console.log(this);
+//             }
+//             else{
+//                 //console.log("test reveals false");
+//                 this.result=false;
+//                 //console.log(this);
+//             }
+//             //console.log("end");
         
-        });
-    }
-}
+//         });
+//     }
+// }
 
-function test(test_id,id){
-    this.test_id=test_id;
-    this.id=id;
-    this.score=0;
-    this.tests=[];
-    this.code=`${id}.cpp`;
-    this.compiled=false;
-    this.compile=function(){
-        exec(`g++ ${this.code} -o ${this.id}.exe`, (error, stdout, stderr) => {
-            if (error) {
+// function test(test_id,id){
+//     this.test_id=test_id;
+//     this.id=id;
+//     this.score=0;
+//     this.tests=[];
+//     this.code=`${id}.cpp`;
+//     this.compiled=false;
+//     this.compile=function(){
+//         exec(`g++ ${this.code} -o ${this.id}.exe`, (error, stdout, stderr) => {
+//             if (error) {
                 
-                console.error(`compile error: ${error}`);
+//                 console.error(`compile error: ${error}`);
                 
-                return;
+//                 return;
         
-            }
-            //console.log("compiled");
-            this.compiled=true;
+//             }
+//             //console.log("compiled");
+//             this.compiled=true;
         
             
-        });
-    }
-    this.run_tests=function(){
-        this.score++;
-        for (let i=0;i<this.tests.length;i++){
-            this.tests[i].test();
-            //this.score+=(100/this.tests.length);
-        }
-    }
+//         });
+//     }
+//     this.run_tests=function(){
+//         this.score++;
+//         for (let i=0;i<this.tests.length;i++){
+//             this.tests[i].test();
+//             //this.score+=(100/this.tests.length);
+//         }
+//     }
     
-}
+// }
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -160,6 +160,9 @@ router.post("/:id",upload.single('file'),(request,response,next)=>{
     response.status(200).send("all good");
     
     
+});
+router.get("/:id",function(req,res){
+    res.send({odd:"very odd"});
 });
 
 
