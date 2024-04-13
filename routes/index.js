@@ -11,4 +11,9 @@ router.get('/', function(req, res, next) {
   res.sendFile(filePath);
 });
 
+router.get('/leaderboard', function(req, res, next) {
+  const filePath = path.join(__dirname, "../public/leaderboard.html");
+  res.sendFile(filePath);
+});
+
 module.exports = router;

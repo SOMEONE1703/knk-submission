@@ -127,8 +127,13 @@ function compile(id){
     });
 }
 router.get('/', function(req, res, next) {
-  const filePath = path.join(__dirname, "../public/homepage.html");
+  const filePath = path.join(__dirname, "../public/submission.html");
   res.sendFile(filePath);
+});
+
+router.get('/results', function(req, res, next) {
+    const filePath = path.join(__dirname, "../public/results.html");
+    res.sendFile(filePath);
 });
 
 router.post('/results', function(request, response, next) {
@@ -184,14 +189,19 @@ router.post("/:id",upload.single('file'),(request,response,next)=>{
             return;
         }
 
-        
-        
         fs.writeFile(f, data, (err) => {
             if (err) {
                 console.error(`Error writing to file: ${err}`);
                 return;
             }
             co_res=compile(ID);
+            exec(`g++ ${ID}.cpp -o ${ID}.exe`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`compile error: ${error}`);
+                    response.status(200).send("compile error");
+                }
+                response.status(200).send("done");
+            });
             //console.log(`first write to ${f} successfully`);
         });
         
@@ -206,12 +216,10 @@ router.post("/:id",upload.single('file'),(request,response,next)=>{
     // test1.tests.push(new test_case(`${ID}`,"tests/adding/1.txt",9));
     // test1.tests.push(new test_case(`${ID}`,"tests/adding/2.txt",604));
     // test1.tests.push(new test_case(`${ID}`,"tests/adding/3.txt",880));
-    if (co_res=="done"){
-        response.status(200).send(main_tests);
-    }
-    else{
-        response.status(200).send("Compile error");
-    }
+    
+    response.status(200).send(main_tests);
+    
+    
 });
 
 
