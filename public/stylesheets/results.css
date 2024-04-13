@@ -1,6 +1,51 @@
-footer{
-    justify-content: center;
+header{
+    display: flex;
+    flex-direction: row;
+    height: 45px;
+    background-color: rgb(153, 153, 153);
 }
+body{
+    margin: 0;
+}
+
+main{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height:80vh;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    width:70%;
+    border: 1px solid;
+}
+.them{
+    width: 50%;
+    border: 1px solid;
+}
+.they{
+    width: 50%;
+    border: 1px solid;
+}
+
+footer{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(153, 153, 153);
+    height:6vh;
+}
+
 #main_title{
-    align-self: center;
+    color: rgb(0, 0, 0);
+}
+.divider{
+    width: 10px;
+}
+.dividers{
+    width: 20px;
 }
