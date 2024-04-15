@@ -130,6 +130,10 @@ router.get('/', function(req, res, next) {
   const filePath = path.join(__dirname, "../public/submission.html");
   res.sendFile(filePath);
 });
+router.get('/problem', function(req, res, next) {
+    const filePath = path.join(__dirname, "../public/problem.html");
+    res.sendFile(filePath);
+  });
 
 router.get('/results', function(req, res, next) {
     const filePath = path.join(__dirname, "../public/results.html");
