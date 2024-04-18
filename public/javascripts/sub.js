@@ -87,8 +87,8 @@ function getRes(){
 
 function get_res(){
     console.log("call");
-    let url="https://knk-submission.azurewebsites.net/submit/1/adding"
-    fetch(url,{
+    //let url="https://knk-submission.azurewebsites.net/submit/1/adding"
+    fetch("/submit/1/adding",{
         method:'GET'
     }).then(res=>{
         if (res.ok){
@@ -101,26 +101,26 @@ function get_res(){
     })
     .then(data=>{
         console.log(data);
-        const where=document.getElementById("result");
-        if (data.score==2){
-        for (let i=0;i<data.tests.length;i++){
-            console.log("weird");
-            var testcaseResult=document.createElement("p");
-            testcaseResult.textContent=`Test Case ${i+1} :   `;
-            if (data.tests[i]=="Passed"){
-                testcaseResult.textContent+="Passed";
-                testcaseResult.style.color="Green";
-            }
-            else{
-                testcaseResult.textContent+="Failed";
-                testcaseResult.style.color="Red";
-            }
-            where.appendChild(testcaseResult);
-        }
-        const butt=document.getElementById("submit");
-        butt.onclick=sendFile;
-        butt.textContent="Re-Submit";
-        }
+        // const where=document.getElementById("result");
+        // if (data.score==2){
+        // for (let i=0;i<data.tests.length;i++){
+        //     console.log("weird");
+        //     var testcaseResult=document.createElement("p");
+        //     testcaseResult.textContent=`Test Case ${i+1} :   `;
+        //     if (data.tests[i]=="Passed"){
+        //         testcaseResult.textContent+="Passed";
+        //         testcaseResult.style.color="Green";
+        //     }
+        //     else{
+        //         testcaseResult.textContent+="Failed";
+        //         testcaseResult.style.color="Red";
+        //     }
+        //     where.appendChild(testcaseResult);
+        // }
+        // const butt=document.getElementById("submit");
+        // butt.onclick=sendFile;
+        // butt.textContent="Re-Submit";
+        // }
         
     })
     .catch(error=>console.error('ERROR',error))
@@ -138,8 +138,8 @@ function sendFile() {
 
     const formData = new FormData();
     formData.append('file', file);
-    let url="https://knk-submission.azurewebsites.net/submit/1"
-    fetch(url, {
+    //let url="https://knk-submission.azurewebsites.net/submit/1"
+    fetch("/submit/1", {
         method: 'POST',
         body: formData
     })
@@ -149,8 +149,8 @@ function sendFile() {
         console.log(data);
         console.log(":theorem");
         const butt=document.getElementById("submit");
-        butt.onclick=get_res;
-        butt.textContent="Get Results";
+        //butt.onclick=get_res;
+        butt.textContent="Re-Submit";
         //document.getElementById('response').innerText = data;
     })
     .catch(error => {
@@ -159,5 +159,7 @@ function sendFile() {
     });
     
 }
-
+function switch_res(){
+    window.location.href = "/submit/results";
+}
  

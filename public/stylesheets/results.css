@@ -37,12 +37,20 @@ form section {
     padding: 0px 1em;
 }
 .them{
+    text-align: center;
+    height:50px;
     width: 50%;
     border: 1px solid;
 }
 .they{
+    text-align: center;
+    height:50px;
     width: 50%;
     border: 1px solid;
+}
+#result{
+    display: flex;
+    flex-direction: column;
 }
 
 footer{
