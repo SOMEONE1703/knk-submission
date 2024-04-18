@@ -162,4 +162,5 @@ function sendFile() {
 function switch_res(){
     window.location.href = "/submit/results";
 }
+console.log("well what the hell");
  

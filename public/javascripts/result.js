@@ -74,4 +74,3 @@ function get_res(){
 }
 
 get_res();
-console.log("well what the hell");
