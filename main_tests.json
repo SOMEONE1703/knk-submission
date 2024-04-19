@@ -12,6 +12,27 @@
       604,
       880
     ],
+    "output": [
+      "Failed",
+      "Failed",
+      "Failed"
+    ],
+    "score": 0,
+    "status": 0
+  },
+  {
+    "test_id": "adding",
+    "person_id": "1",
+    "input": [
+      "C:\\Users\\siphe\\Documents\\programs\\html+js+css\\knk-submission\\routes/tests/adding/1.txt",
+      "C:\\Users\\siphe\\Documents\\programs\\html+js+css\\knk-submission\\routes/tests/adding/2.txt",
+      "C:\\Users\\siphe\\Documents\\programs\\html+js+css\\knk-submission\\routes/tests/adding/3.txt"
+    ],
+    "expected_out": [
+      9,
+      604,
+      880
+    ],
     "output": [],
     "score": "not-a-value",
     "status": 0

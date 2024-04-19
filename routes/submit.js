@@ -260,7 +260,7 @@ router.get("/:id/:func", function(req, res) {
     console.log(__dirname);
     try {
         //const data = fs.readFileSync(`${ID}${name}.json`, 'utf8');
-        const data = fs.readFileSync(`../${ID}${name}.json`, 'utf8');
+        const data = fs.readFileSync(`${ID}${name}.json`, 'utf8');
         // Parse JSON data
         const main_test = JSON.parse(data);
         //var main_test = require(`../${ID}${name}.json`);
