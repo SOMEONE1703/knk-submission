@@ -111,37 +111,45 @@ function adding_test(person_id, test_id, status) {
     this.score = 'not-a-value';
     this.status = status;
     
-
+    this.save_this=function(){
+        const jsonData = JSON.stringify(this, null, 2);
+        fs.writeFileSync(`${this.person_id}${this.test_id}.json`, jsonData);
+    }
     this.test = async function () {
         const compiled = await compile(person_id);
         console.log(`compile outcome is: ${compiled}: end`);
         if (compiled){
-        for (let i = 0; i < this.input.length; i++) {
-            try {
-                const outcome = await run_test(this.person_id, this.input[i], this.expected_out[i]);
-                console.log(`outcome is: ${outcome}: end`);
-                if (this.score === 'not-a-value') {
-                    this.score = 0;
+            for (let i = 0; i < this.input.length; i++) {
+                try {
+                    const outcome = await run_test(this.person_id, this.input[i], this.expected_out[i]);
+                    console.log(`outcome is: ${outcome}: end`);
+                    if (this.score === 'not-a-value') {
+                        this.score = 0;
+                    }
+                    if (outcome === true) {
+                        this.output.push("Passed");
+                        this.score++;
+                    } else if (outcome === false) {
+                        this.output.push("Failed");
+                    }
+                    this.save_this();
+                } catch (error) {
+                    console.error(`Error occurred during test execution: ${error}`);
                 }
-                if (outcome === true) {
-                    this.output.push("Passed");
-                    this.score++;
-                } else if (outcome === false) {
-                    this.output.push("Failed");
-                }
-            } catch (error) {
-                console.error(`Error occurred during test execution: ${error}`);
             }
         }
     }
-    }
+    
     this.test();
     
 }
 
 
 
-
+function saveMainTestsToFile(mainTestsArray) {
+    const jsonData = JSON.stringify(mainTestsArray, null, 2);
+    fs.writeFileSync('main_tests.json', jsonData);
+}
 router.get('/', function(req, res, next) {
   const filePath = path.join(__dirname, "../public/submission.html");
   res.sendFile(filePath);
@@ -152,7 +160,7 @@ router.get('/problem', function(req, res, next) {
   });
 
 router.get('/results', function(req, res, next) {
-    console.log("switch called");
+    
     const filePath = path.join(__dirname, "../public/results.html");
     res.sendFile(filePath);
 });
@@ -163,34 +171,31 @@ router.post('/results', function(request, response, next) {
     let index=-1;
     //console.log(main_tests);
     for (let i=0;i<main_tests.length;i++){
-        if (main_tests[i].test_id==name&&main_tests[i].id==ID){
+        if (main_tests[i].test_id==name&&main_tests[i].person_id==ID){
             index=i;
         }
     }
-    if (index===-1){
-        response.status(404).send("Test not found");
-    }
-    else{
-        let n_tests=3;
-        main_tests[index].tests.push(new test_case(`${ID}`,"tests/adding/1.txt",9));
-        main_tests[index].tests.push(new test_case(`${ID}`,"tests/adding/2.txt",604));
-        main_tests[index].tests.push(new test_case(`${ID}`,"tests/adding/3.txt",880));
-        main_tests[index].run_tests();
-        let arr=[];
-        for (let i=0;i<n_tests;i++){
-            //console.log(main_tests[index].tests[i]);
-            //console.log(main_tests[index].tests[i]);
-            if (main_tests[index].tests[i].result=="not-a-value"){}
-            else if (main_tests[index].tests[i].result){
-                arr.push("Passed");
-            }
-            else{
-                arr.push("Failed");
-            }
-        }
-        response.status(200).send({tests:arr,score:main_tests[index].score});
+    
+        // let n_tests=3;
+        // main_tests[index].tests.push(new test_case(`${ID}`,"tests/adding/1.txt",9));
+        // main_tests[index].tests.push(new test_case(`${ID}`,"tests/adding/2.txt",604));
+        // main_tests[index].tests.push(new test_case(`${ID}`,"tests/adding/3.txt",880));
+        // main_tests[index].run_tests();
+        // let arr=[];
+        // for (let i=0;i<n_tests;i++){
+        //     //console.log(main_tests[index].tests[i]);
+        //     //console.log(main_tests[index].tests[i]);
+        //     if (main_tests[index].tests[i].result=="not-a-value"){}
+        //     else if (main_tests[index].tests[i].result){
+        //         arr.push("Passed");
+        //     }
+        //     else{
+        //         arr.push("Failed");
+        //     }
+        // }
+        response.status(200).send(main_tests);
         
-    }
+    
 });
 
 router.post("/:id",upload.single('file'),(request,response,next)=>{
@@ -243,42 +248,41 @@ router.post("/:id",upload.single('file'),(request,response,next)=>{
     // test1.tests.push(new test_case(`${ID}`,"tests/adding/3.txt",880));
     
     response.status(200).send(main_tests);
-    
+    saveMainTestsToFile(main_tests);
     
 });
 
 
-router.get("/:id/:func",function(request,response){
-    let ID=request.params.id;
-    let name=request.params.func;
-    let index=-1;
-    console.log("me");
-    console.log(ID);
-    console.log(name);
-    console.log(main_tests);
-    for (let i=0;i<main_tests.length;i++){
-        if (main_tests[i].test_id==name&&main_tests[i].person_id==ID){
-            index=i;
-        }
+router.get("/:id/:func", function(req, res) {
+    console.log("switch called");
+    let ID=req.params.id;
+    let name=req.params.func;
+    console.log(__dirname);
+    try {
+        //const data = fs.readFileSync(`${ID}${name}.json`, 'utf8');
+        const data = fs.readFileSync(`../${ID}${name}.json`, 'utf8');
+        // Parse JSON data
+        const main_test = JSON.parse(data);
+        //var main_test = require(`../${ID}${name}.json`);
+        res.send({status:1,tests:main_test.output});
+    } catch (err) {
+        console.error('Error reading main_tests.json:', err);
+        res.status(200).send({status:0,message:`error reading ${ID}${name}.json:${err.message}`});
     }
-    if (index===-1){
-        response.status(200).send({status:"Test not found",tests:main_tests});
-    }
-    else{
-        console.log(main_tests[index].output);
-        response.status(200).send({tests:main_tests[index].output});
-        
-    }
-    
-    //response.send(main_tests);
 });
 
-
-
-
-// router.get("/:id",function(req,res){
-//     res.send(main_tests);
-// });
-
+router.get("/somethi", function(req, res) {
+    try {
+        // Read main_tests.json file synchronously
+        const data = fs.readFileSync('main_tests.json', 'utf8');
+        // Parse JSON data
+        const main_tests = JSON.parse(data);
+        // Send main_tests array as response
+        res.send(main_tests);
+    } catch (err) {
+        console.error('Error reading main_tests.json:', err);
+        res.status(200).send('Error reading main_tests.json');
+    }
+});
 
 module.exports = router;

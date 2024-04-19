@@ -43,6 +43,8 @@ function get_res(){
         for (let i=0;i<data.tests.length;i++){
             console.log("weird");
             var where= document.createElement("section");
+            var some=document.createElement("h1");
+            var some2=document.createElement("h1");
             where.style.display="flex";
             where.style.flexDirection="row";
             var testcaseResult1=document.createElement("section");
@@ -50,15 +52,18 @@ function get_res(){
             
             var testcaseResult2=document.createElement("section");
             testcaseResult2.className="they";
-            testcaseResult1.textContent=`Test Case ${i+1} :   `;
+            some.textContent=`Test Case ${i+1} :   `;
+            testcaseResult1.appendChild(some);
             if (data.tests[i]=="Passed"){
-                testcaseResult2.textContent+="Passed";
+                some2.textContent+="Passed";
+                testcaseResult2.appendChild(some2);
                 testcaseResult2.style.backgroundColor="Green";
                 v+=(100/data.tests.length);
             }
             else{
-                testcaseResult2.textContent+="Failed";
-                testcaseResult2.style.color="Red";
+                some2.textContent+="Failed";
+                testcaseResult2.appendChild(some2);
+                testcaseResult2.style.backgroundColor="Red";
             }
             where.appendChild(testcaseResult1);
             where.appendChild(testcaseResult2);
